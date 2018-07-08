@@ -1,68 +1,129 @@
 'use strict'
-import axios from 'axios'
+import axios from 'axios';
+import validator from 'validator';
+import Auth from '../modules/Auth';
 
-export function fetchGameDetails () {
-  return function (dispatch) {
-    axios
-      .get('http://starlord.hackerearth.com/gamesext')
-      .then(function (response) {
-        dispatch({
-          type: 'FETCH_GAME_DETAILS',
-          payload: response.data
-        })
-      })
-      .catch(function (err) {
-        dispatch({
-          type: 'FETCH_GAME_DETAILS_REJECTED',
-          payload: 'Failed in Fetching Details'
-        })
-      })
-  }
-}
 
-export function applyFilters (searchText) {
-  return function (dispatch) {
-    axios
-      .get('http://starlord.hackerearth.com/gamesext')
-      .then(function (response) {
-        let filteredPlayers = response.data.filter(
-          player => player.title === searchText
-        )
-        dispatch({
-          type: 'APPLY_FILTERS',
-          payload: filteredPlayers
-        })
-      })
-      .catch(function (err) {
-        dispatch({
-          type: 'FETCH_GAME_DETAILS_REJECTED',
-          payload: 'Failed in Fetching Details'
-        })
-      })
-  }
-}
-
-export function resetSearchArray () {
+export function updateField(fieldName,value){
   return function (dispatch) {
     dispatch({
-      type: 'RESET_SEARCH_ARRAY'
+      type: 'UPDATE_FIELD',
+      fieldName,
+      value,
     })
   }
 }
 
-export function filterAdd (value) {
+export function loginUser(username){
   return function (dispatch) {
-    dispatch({
-      type: 'ADD_FILTERS',
-      payload: value
-    })
+    axios
+      .post('/auth/login-fm',{username:username})
+      .then(function (response) {
+        dispatch({
+          type: 'LOGIN',
+          data:response.data
+        })
+      })
+    }
   }
-}
 
-export function filterRemove () {
-  return function (dispatch) {
+  export function resetFieldValue() {
+    return function (dispatch) {
       dispatch({
-        type: 'REMOVE_FILTERS',
+        type: 'RESET',
       })
+    }
   }
-}
+
+  export function fetchBasicInfo(username) {
+    return function(dispatch){
+      axios.get(`/auth/userInfo?userName=${username}`).then(function(response){
+        dispatch({
+          type:'FETCH_BASIC_INFO',
+          data:response.data
+        })
+      })
+    }
+  }
+
+  export function fetchRecentlyPlayedTracks(username) {
+    return function(dispatch) {
+      axios.get(`/auth/recentTracks?userName=${username}`).then(function(response){
+        dispatch({
+          type:'FETCH_RECENT_TRACKS',
+          data:response.data
+        })
+      })
+    }
+  }
+
+  export function fetchLoveTracks(username) {
+    return function(dispatch) {
+      axios.get(`/auth/loveTracks?userName=${username}`).then(function(response){
+        dispatch({
+          type:'FETCH_LOVED_TRACKS',
+          data:response.data
+        })
+      })
+    }
+  }
+
+  export function fetchTopTracks(username) {
+    return function(dispatch) {
+      axios.get(`/auth/topTracks?userName=${username}`).then(function(response){
+        dispatch({
+          type:'FETCH_TOP_TRACKS',
+          data:response.data
+        })
+      })
+    }
+  }
+
+  export function fetchTopTopArtists(username) {
+    return function(dispatch) {
+      axios.get(`/auth/topArtists?userName=${username}`).then(function(response){
+        dispatch({
+          type:'FETCH_TOP_Artists',
+          data:response.data
+        })
+      })
+    }
+  }
+
+    // return function(dispatch) {
+    //   dispatch({
+    //     type: 'FETCH_BASIC_INFO',
+    //     userName
+    //   })
+    // }
+  // }
+
+    // return function (dispatch) {
+    //   dispatch({
+    //     type:'LOGIN',
+    //     payload:
+    //   })
+    // }
+  // if ( validator && validator.isEmpty(email)) {
+  //   return {
+  //     type: EMAIL_INVALID,
+
+  //     error: "Email can't be empty",
+  //   };
+  // }
+
+  // if (!validator.isEmail(email)) {
+  //   return {
+  //     type: EMAIL_INVALID,
+  //     error: 'Email not valid',
+  //   };
+  // }
+
+  // if (validator.isEmpty(password)) {
+  //   return {
+  //     type: PASSWORD_INVALID,
+  //     error: "Password can't be empty",
+  //   };
+  // }
+
+// }

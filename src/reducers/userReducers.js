@@ -3,100 +3,141 @@ import uniq from 'lodash/uniq'
 import _ from 'lodash'
 
 const defaultState = {
-  filters: []
+  filters: [],
+  userInfo:{},
+  age:undefined,
+  country:undefined,
+  gender:undefined,
+  name:undefined,
+  playcount:undefined,
+  playlists:undefined,
+  realname:undefined,
+  subscriber:undefined,
+  recentTracks:[],
+  loveTracks:[],
+  topTracks:[],
+  topArtists:[]
 }
 
 export function userReducers (state = {players: []}, action) {
   switch (action.type) {
-    case 'FETCH_GAME_DETAILS': {
-      // let players = state.players.concat(action.payload);
-      const totalAvailablePages = Math.floor(action.payload.length / 50)
-      const totalCount = action.payload.length
-      let allTitles = action.payload.map(game => game.title)
-      allTitles = uniq(allTitles)
-      return {
-        players: action.payload,
-        totalPages: totalAvailablePages,
-        totalCount: totalCount,
-        perPage: 50,
-        availableTitles: allTitles
-      }
-      break
-    }
-
-    case 'APPLY_FILTERS': {
-      const totalAvailablePages = Math.floor(action.payload.length / 50)
-      const totalCount = action.payload.length
+    case 'UPDATE_FIELD': {
+      const { fieldName, value } = action;
       return {
         ...state,
-        players: action.payload,
-        totalPages: totalAvailablePages,
-        totalCount: totalCount,
-        perPage: 50,
-        filters: []
-      }
-      break
+        [fieldName]: value,
+        [`${fieldName}ErrorMessage`]: undefined,
+      };
     }
 
-    case 'RESET_SEARCH_ARRAY': {
+    case 'LOGIN':{
+      return{
+        ...state,
+        userInfo:action.data
+      }
+    }
+
+    case 'RESET':{
+      return{
+        ...defaultState
+      }
+    }
+
+    case 'FETCH_BASIC_INFO':{
+      const { data: {age,country,gender,name,playcount,playlists,realname,subscriber} } = action;
+      return{
+        ...state,
+        age,
+        country,
+        gender,
+        name,
+        playcount,
+        playlists,
+        realname,
+        subscriber,
+        recentTracks:[],
+        loveTracks:[],
+        topTracks:[],
+        topArtists:[]
+      }
+    }
+
+    case 'FETCH_RECENT_TRACKS':{
+      const { data: {recentTracks} } = action;
+      return{
+        ...state,
+        recentTracks,
+        age:undefined,
+        country:undefined,
+        gender:undefined,
+        name:undefined,
+        playcount:undefined,
+        playlists:undefined,
+        realname:undefined,
+        subscribe:undefined,
+        loveTracks:[],
+        topTracks:[],
+        topArtists:[]
+      }
+    }
+
+    case 'FETCH_LOVED_TRACKS': {
+      const { data: {loveTracks} } = action;
+      return{
+        ...state,
+        loveTracks,
+        recentTracks:[],
+        topTracks:[],
+        topArtists:[],
+        age:undefined,
+        country:undefined,
+        gender:undefined,
+        name:undefined,
+        playcount:undefined,
+        playlists:undefined,
+        realname:undefined,
+        subscribe:undefined,
+      }
+    }
+
+    case 'FETCH_TOP_TRACKS':{
+      const { data: {topTracks} } = action;
       return {
         ...state,
-        players: undefined,
-        totalPages: 0,
-        totalCount: 0,
-        perPage: 50,
-        filters: []
+        topTracks,
+        loveTracks:[],
+        recentTracks:[],
+        topArtists:[],
+        age:undefined,
+        country:undefined,
+        gender:undefined,
+        name:undefined,
+        playcount:undefined,
+        playlists:undefined,
+        realname:undefined,
+        subscribe:undefined,
       }
-      break
     }
 
-    case 'ADD_FILTERS': {
-      // let filters = state.players.concat(...state.players,{filters:action.payload})
-      let filteredList
-      if (action.payload == 'Incresing') {
-        filteredList = _.orderBy(
-          state.players,
-          function (item) {
-            return item.score
-          },
-          ['asc']
-        )
-      }
-      if (action.payload == 'Decresing') {
-        filteredList = _.orderBy(
-          state.players,
-          function (item) {
-            return item.score
-          },
-          ['desc']
-        )
-      }
-      const totalAvailablePages = Math.floor(state.players.length / 50)
-      const totalCount = state.players.length
-
-      return {
+    case 'FETCH_TOP_Artists':{
+      const { data : {topArtists} } = action;
+      return{
         ...state,
-        players: filteredList,
-        filters: [...defaultState.filters, action.payload],
-        totalPages: totalAvailablePages,
-        totalCount: totalCount,
-        perPage: 50
+        topArtists,
+        topTracks:[],
+        loveTracks:[],
+        recentTracks:[],
+        age:undefined,
+        country:undefined,
+        gender:undefined,
+        name:undefined,
+        playcount:undefined,
+        playlists:undefined,
+        realname:undefined,
+        subscribe:undefined,
       }
     }
 
-    case 'REMOVE_FILTERS': {
-      const totalAvailablePages = Math.floor(state.players.length / 50);
-      const totalCount = state.players.length;
-
-        return {
-          ...state,
-          players: state.players,
-          totalPages: totalAvailablePages,
-          totalCount: totalCount,
-          perPage: 50,
-          filters: []
-        }
-    }
 
     default:
       return {
